@@ -1,4 +1,4 @@
-# packages ----------------------------------------------------------------
+# Packages ----------------------------------------------------------------
 
 library(tidyverse)
 library(skimr)
@@ -179,7 +179,6 @@ visualise(null_distribution, bins = 20) +
 
 null_distribution %>%
   get_p_value(obs_stat = obs_diff_means, direction = "both")
-
 # Rejecting H0!
 
 # We can also use a 95% CI (SE method)
@@ -194,7 +193,6 @@ gentoo_adelie %>%
   generate(reps = 1000, type = "bootstrap") %>%
   calculate(stat = "diff in means", order = c("Gentoo", "Adelie")) %>% 
   get_ci(level = 0.95, type = "se", point_estimate = obs_diff_means)
-
 # Note that 0 isn't included, so we can also reject the H0 here 
 
 # Hypothesis test for mean difference between Chinstrap and Adelie ---------------------------------------------------------
@@ -211,7 +209,6 @@ chinstrap_adelie %>%
   theme(text = element_text(size = 14)) + 
   theme(legend.position = "none") +
   labs(x = "", y = "Body Mass (g)") 
-
 # Looks very similar, so I am not expecting a significant difference here
 
 # H0: mu_c - mu_a = 0 
@@ -237,7 +234,6 @@ visualise(null_distribution, bins = 20) +
 
 null_distribution %>%
   get_p_value(obs_stat = obs_diff_means, direction = "both")
-
 # Not rejecting H0!
 
 # Can also use a 95% CI (Percentile method)
@@ -248,5 +244,4 @@ chinstrap_adelie %>%
   generate(reps = 1000, type = "bootstrap") %>%
   calculate(stat = "diff in means", order = c("Chinstrap", "Adelie")) %>% 
   get_ci(level = 0.95, type = "percentile")
-
 # We can't reject H0 since 0 is included in the CI
