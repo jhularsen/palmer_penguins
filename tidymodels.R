@@ -6,3 +6,5 @@ penguin_df <- penguins %>%
   select(-year, island)
 
 penguin_split <- initial_split(penguin_df)
+penguin_split
+
