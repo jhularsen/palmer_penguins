@@ -1,1 +1,1 @@
-# Analyses of Palmer Penguins Data
+# Analyses of Palmer Penguins data
