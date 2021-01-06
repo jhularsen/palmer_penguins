@@ -5,6 +5,7 @@ library(skimr)
 library(palmerpenguins)
 library(RColorBrewer)
 library(infer)
+theme_set(theme_light())
 
 # EDA -----------------------------------------------------------
 
@@ -32,7 +33,6 @@ penguins %>%
   geom_label(aes(x = species, y = n, label = n)) +
   scale_fill_brewer(palette = "Dark2") + 
   facet_wrap(~sex) +
-  theme_bw() +
   theme(legend.position = "none") + 
   labs(x = "", y = "Count")
 # We observe a similar amount of male and female penguins for each species
@@ -42,7 +42,6 @@ penguins %>%
   geom_point(size = 2) + 
   geom_smooth(method = "lm", se = FALSE, size = 1.3) + 
   scale_color_brewer(palette = "Dark2") + 
-  theme_bw() + 
   theme(text = element_text(size = 14)) + 
   theme(legend.position = "bottom") +
   labs(x = "Flipper Length (mm)", y = "Bill Length (mm)", color = "Penguin species", 
@@ -52,8 +51,6 @@ penguins %>%
   ggplot(aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
   geom_point(size = 2) + 
   geom_smooth(method = "lm", se = FALSE, size = 1.3) + 
-  scale_color_brewer(palette = "Dark2") + 
-  theme_bw() + 
   theme(text = element_text(size = 14)) + 
   theme(legend.position = "bottom") +
   labs(x = "Flipper Length (mm)", y = "Body Mass (g)", color = "Penguin species", 
@@ -63,7 +60,6 @@ penguins %>%
   ggplot(aes(x = species, y = body_mass_g, fill = species)) +
   geom_boxplot() + 
   scale_fill_brewer(palette = "Dark2") + 
-  theme_bw() + 
   theme(text = element_text(size = 14)) + 
   theme(legend.position = "none") +
   labs(x = "", y = "Body Mass (g)", 
@@ -88,8 +84,7 @@ gentoo_means <- gentoo_resamples %>%
 gentoo_means %>% 
   ggplot(aes(x = mean_body_mass)) +
   geom_histogram(bins = 20, color = "white", boundary = 5100) + 
-  theme_bw() + 
-  labs(x = "Sample mean", y = "Count")
+  labs(x = "Resample mean", y = "Count")
 
 
 # Percentile method 
@@ -113,8 +108,7 @@ bootstrap_distribution <- gentoo %>%
   generate(reps = 1000, type = "bootstrap") %>%
   calculate(stat = "mean") 
 
-visualise(bootstrap_distribution) + 
-  theme_bw()
+visualise(bootstrap_distribution) 
 
 # Percentile method 
 percentile_ci <- bootstrap_distribution %>% 
@@ -123,7 +117,6 @@ percentile_ci <- bootstrap_distribution %>%
 percentile_ci  
 
 visualize(bootstrap_distribution) + 
-  theme_bw() + 
   shade_ci(endpoints = percentile_ci)
 
 # SE method
@@ -133,7 +126,6 @@ standard_error_ci <- bootstrap_distribution %>%
 standard_error_ci 
 
 visualize(bootstrap_distribution) + 
-  theme_bw() + 
   shade_ci(endpoints = standard_error_ci)
 
 
@@ -147,7 +139,6 @@ gentoo_adelie %>%
   ggplot(aes(x = species, y = body_mass_g, fill = species)) +
   geom_boxplot() + 
   scale_fill_brewer(palette = "Dark2") + 
-  theme_bw() + 
   theme(text = element_text(size = 14)) + 
   theme(legend.position = "none") +
   labs(x = "", y = "Body Mass (g)") 
@@ -174,8 +165,7 @@ obs_diff_means <- gentoo_adelie %>%
 obs_diff_means  
   
 visualise(null_distribution, bins = 20) + 
-  shade_p_value(obs_stat = obs_diff_means, direction = "both") + 
-  theme_bw()
+  shade_p_value(obs_stat = obs_diff_means, direction = "both") 
 
 null_distribution %>%
   get_p_value(obs_stat = obs_diff_means, direction = "both")
@@ -184,16 +174,20 @@ null_distribution %>%
 # We can also use a 95% CI (SE method)
 set.seed(123)
 
-obs_diff_means <- gentoo_adelie %>%
-  specify(body_mass_g ~ species) %>%
-  calculate(stat = "diff in means", order = c("Gentoo", "Adelie"))
-
-gentoo_adelie %>%
+bootstrap_distribution <- gentoo_adelie %>%
   specify(body_mass_g ~ species) %>%
   generate(reps = 1000, type = "bootstrap") %>%
-  calculate(stat = "diff in means", order = c("Gentoo", "Adelie")) %>% 
+  calculate(stat = "diff in means", order = c("Gentoo", "Adelie")) 
+
+se_ci <- bootstrap_distribution %>%
   get_ci(level = 0.95, type = "se", point_estimate = obs_diff_means)
+
+se_ci
+
+visualize(bootstrap_distribution) + 
+  shade_confidence_interval(endpoints = se_ci)
 # Note that 0 isn't included, so we can also reject the H0 here 
+
 
 # Hypothesis test for mean difference between Chinstrap and Adelie ---------------------------------------------------------
 
@@ -205,7 +199,6 @@ chinstrap_adelie %>%
   ggplot(aes(x = species, y = body_mass_g, fill = species)) +
   geom_boxplot() + 
   scale_fill_brewer(palette = "Dark2") + 
-  theme_bw() + 
   theme(text = element_text(size = 14)) + 
   theme(legend.position = "none") +
   labs(x = "", y = "Body Mass (g)") 
@@ -226,11 +219,10 @@ obs_diff_means <- chinstrap_adelie %>%
   specify(body_mass_g ~ species) %>%
   calculate(stat = "diff in means", order = c("Chinstrap", "Adelie"))
 
-obs_diff_means  
+obs_diff_means
 
 visualise(null_distribution, bins = 20) + 
-  shade_p_value(obs_stat = obs_diff_means, direction = "both") + 
-  theme_bw()
+  shade_p_value(obs_stat = obs_diff_means, direction = "both") 
 
 null_distribution %>%
   get_p_value(obs_stat = obs_diff_means, direction = "both")
@@ -239,9 +231,17 @@ null_distribution %>%
 # Can also use a 95% CI (Percentile method)
 set.seed(123)
 
-chinstrap_adelie %>%
+bootstrap_distribution <- chinstrap_adelie %>%
   specify(body_mass_g ~ species) %>%
   generate(reps = 1000, type = "bootstrap") %>%
-  calculate(stat = "diff in means", order = c("Chinstrap", "Adelie")) %>% 
+  calculate(stat = "diff in means", order = c("Chinstrap", "Adelie")) 
+
+percentile_ci <- bootstrap_distribution %>% 
   get_ci(level = 0.95, type = "percentile")
+
+percentile_ci
+
+visualize(bootstrap_distribution) + 
+  shade_confidence_interval(endpoints = percentile_ci) + 
+  geom_vline(xintercept = 0, size = 2)
 # We can't reject H0 since 0 is included in the CI
