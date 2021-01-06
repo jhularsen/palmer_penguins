@@ -5,7 +5,7 @@ library(skimr)
 library(palmerpenguins)
 library(RColorBrewer)
 library(infer)
-theme_set(theme_light())
+theme_set(theme_minimal())
 
 # EDA -----------------------------------------------------------
 
