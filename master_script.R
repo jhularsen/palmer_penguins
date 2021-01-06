@@ -47,6 +47,14 @@ penguins %>%
   labs(x = "Flipper Length (mm)", y = "Bill Length (mm)", color = "Penguin species", 
        title = "Bill length increases with flipper length") 
 
+arrows <- tibble(
+    x1 = c(187, 212),
+    x2 = c(205, 204),
+    y1 = c(6000, 3000), 
+    y2 = c(5500, 3500))
+
+arrows
+
 penguins %>% 
   ggplot(aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
   geom_point(size = 2) + 
@@ -54,7 +62,12 @@ penguins %>%
   theme(text = element_text(size = 14)) + 
   theme(legend.position = "bottom") +
   labs(x = "Flipper Length (mm)", y = "Body Mass (g)", color = "Penguin species", 
-       title = "Body mass increases with flipper length") 
+       title = "Body mass increases with flipper length") +
+  annotate("text", x = 180, y = 6000, label = "Gentoo penguins \n are much larger") +
+  annotate("text", x = 223, y = 3000, label = "It is hard to differentiate \n Chinstrap and Adelie") +
+  geom_curve(data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2),
+    arrow = arrow(length = unit(0.08, "inch")), size = 0.8,
+    color = "gray20", curvature = -0.3)
 
 penguins %>% 
   ggplot(aes(x = species, y = body_mass_g, fill = species)) +
